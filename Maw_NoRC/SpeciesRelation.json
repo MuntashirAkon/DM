@@ -1,0 +1,122 @@
+{
+    "goat": [
+        "goat",
+        "bovine",
+        "lemur",
+        "chimp",
+        "rabbit",
+        "human",
+        "rat",
+        "gorilla",
+        "mouse",
+        "gallus"
+    ], 
+    "chimp": [
+        "chimp",
+        "human",
+        "gorilla",
+        "bovine",
+        "goat",
+        "rabbit",
+        "lemur",
+        "rat",
+        "mouse",
+        "gallus"
+    ], 
+    "gallus": [
+        "gallus",
+        "rat",
+        "lemur",
+        "goat",
+        "rabbit",
+        "bovine",
+        "gorilla",
+        "human",
+        "mouse",
+        "chimp"
+    ], 
+    "human": [
+        "human",
+        "gorilla",
+        "chimp",
+        "bovine",
+        "rabbit",
+        "lemur",
+        "goat",
+        "mouse",
+        "rat",
+        "gallus"
+    ], 
+    "lemur": [
+        "lemur",
+        "goat",
+        "human",
+        "rabbit",
+        "bovine",
+        "rat",
+        "chimp",
+        "gorilla",
+        "gallus",
+        "mouse"
+    ], 
+    "mouse": [
+        "mouse",
+        "rat",
+        "bovine",
+        "rabbit",
+        "goat",
+        "gorilla",
+        "lemur",
+        "human",
+        "chimp",
+        "gallus"
+    ], 
+    "rabbit": [
+        "rabbit",
+        "bovine",
+        "gorilla",
+        "human",
+        "goat",
+        "mouse",
+        "chimp",
+        "lemur",
+        "rat",
+        "gallus"
+    ], 
+    "rat": [
+        "rat",
+        "mouse",
+        "bovine",
+        "goat",
+        "rabbit",
+        "lemur",
+        "gallus",
+        "gorilla",
+        "chimp",
+        "human"
+    ], 
+    "gorilla": [
+        "gorilla",
+        "human",
+        "chimp",
+        "rabbit",
+        "bovine",
+        "lemur",
+        "goat",
+        "mouse",
+        "rat",
+        "gallus"
+    ], 
+    "bovine": [
+        "bovine",
+        "human",
+        "goat",
+        "rabbit",
+        "chimp",
+        "gorilla",
+        "mouse",
+        "rat",
+        "lemur",
+        "gallus"
+    ]
+}

@@ -1,0 +1,10 @@
+goat
+chimp
+gallus
+human
+lemur
+mouse
+rabbit
+rat
+gorilla
+bovine

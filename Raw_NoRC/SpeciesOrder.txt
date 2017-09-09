@@ -1,0 +1,11 @@
+human,hu
+goat,gt
+opossum,op
+gallus,ga
+lemur,le
+mouse,mo
+rabbit,rb
+rat,rt
+gorilla,gr
+bovine,bv
+chimp,ch
