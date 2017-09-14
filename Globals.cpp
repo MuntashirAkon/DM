@@ -9,13 +9,13 @@
 //
 // Total number of genes/species
 //
-extern  int g_numGenes = 0;
+int  g_numGenes = 0;
 
 //
 // Short name code used for each species.
 // (Used in generating the filename for Raw/Maw sets for respective species)
 //
-extern  char g_strSpeciesShortName[NUM_GENE][MAX_SPECIES_NAME_LEN] = {
+char g_strSpeciesShortName[NUM_GENE][MAX_SPECIES_NAME_LEN] = {
         "hu",
         "gt",
         "op",
@@ -32,7 +32,7 @@ extern  char g_strSpeciesShortName[NUM_GENE][MAX_SPECIES_NAME_LEN] = {
 //
 // Full name of each species.
 //
-extern  char g_strSpeciesFullName[NUM_GENE][MAX_SPECIES_NAME_LEN] = {
+char g_strSpeciesFullName[NUM_GENE][MAX_SPECIES_NAME_LEN] = {
         "human",
         "goat",
         "opossum",
@@ -49,5 +49,5 @@ extern  char g_strSpeciesFullName[NUM_GENE][MAX_SPECIES_NAME_LEN] = {
 //
 // Location of the folder that contains necessary data files
 //
-extern  char g_strDataDir[MAX_PATH] = "";
-//extern  char g_strDataDir[MAX_PATH] = "C:\\Users\\mrahman\\Desktop\\Masters Material\\Data\\Input\\Maw_RC";
+char g_strDataDir[MAX_PATH] = "";
+

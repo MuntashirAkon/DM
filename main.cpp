@@ -3,6 +3,8 @@
 //
 #include <iostream>		// <Mun>
 #include <string>		// <Mun>
+#include <fstream>
+#include <iomanip>
 #include <cstdio>
 #include <cassert>
 
@@ -20,60 +22,58 @@ using namespace std;
 #define SUCCESS 0
 #define FAILURE 1
 
-extern  int g_numGenes;
-extern  char g_strSpeciesShortName[NUM_GENE][MAX_SPECIES_NAME_LEN];
-extern  char g_strSpeciesFullName[NUM_GENE][MAX_SPECIES_NAME_LEN];
-extern  char g_strDataDir[MAX_PATH];
+int _gLargestSpeciesLength = 0;
 
-extern  int Initialize(
+extern int  g_numGenes;
+extern char g_strSpeciesShortName[NUM_GENE][MAX_SPECIES_NAME_LEN];
+extern char g_strSpeciesFullName[NUM_GENE][MAX_SPECIES_NAME_LEN];
+extern char g_strDataDir[MAX_PATH];
+
+extern int Initialize(
     char **geneFullNames,
     char **geneShortNames,
     int nGenes,
     char *dataDir
     );
 
-extern  int getDiffMatrix(
+extern int getDiffMatrix(
     double diffMatrix[][NUM_GENE],
     int absWordType,
     int diffIndex
     );
 
-extern  int getRanks(
+extern int getRanks(
     int rank[][NUM_GENE],
     int absWordType,
     int diffIndex
     );
 
-void PrintSpeciesRelations(int ranks[][NUM_GENE], FILE* text, FILE* json)
-{
+void PrintSpeciesRelations(int ranks[][NUM_GENE], ofstream *text, ofstream *json){
     int i, j;
-
-    fprintf(json, "{\n");
-    for (i = 0; i < g_numGenes; i++)
-    {
-        fprintf(text, "%7s:", g_strSpeciesFullName[i]);
-        fprintf(json, "    \"%s\": [\n", g_strSpeciesFullName[i]);
-        for (j = 0; j < g_numGenes; j++)
-        {
-            fprintf(text, " -> %s%c", g_strSpeciesFullName[ranks[i][j]], (j == g_numGenes-1 ? '\n' : ' '));
-            fprintf(json, "        \"%s\"", g_strSpeciesFullName[ranks[i][j]]);
-            if(j != g_numGenes - 1) fprintf(json, ",");
-            fprintf(json, "\n");
+    
+    if(!text->is_open() && !json->is_open()) return;
+    
+    *json << "{" << endl;
+    for (i = 0; i < g_numGenes; i++){
+        *text << setw(_gLargestSpeciesLength) << g_strSpeciesFullName[i] << ":";
+        *json << "    \"" << g_strSpeciesFullName[i] << "\": [" << endl;
+        for (j = 0; j < g_numGenes; j++){
+            *text << " -> " << setw(_gLargestSpeciesLength) << g_strSpeciesFullName[ranks[i][j]] << ((j != g_numGenes - 1) ? " ": "\n");
+            *json << "        \"" << g_strSpeciesFullName[ranks[i][j]] << "\"" << ((j != g_numGenes - 1) ?  ",": "") << endl;
         }
-        fprintf(json, "    ]");
-        if(i != g_numGenes - 1) fprintf(json, ", ");
-        fprintf(json, "\n");
+        *json << "    ]" << ((i != g_numGenes - 1) ? ", " : "") << endl;
     }
-    fprintf(json, "}\n");
+    *json << "}" << endl;
+    text->close();
+    json->close();
 }
 
-void PrintDiffMatrix(double diffMatrix[][NUM_GENE], FILE* f1, FILE* f2)
-{
+void PrintDiffMatrix(double diffMatrix[][NUM_GENE], FILE* f1, FILE* f2){
     int i, j;
 
     for (i = 0; i < g_numGenes; i++)
     {
-        printf("{ ");
+        cout << "{ ";
 
         for (j = 0; j < i; j++)
         {
@@ -84,7 +84,7 @@ void PrintDiffMatrix(double diffMatrix[][NUM_GENE], FILE* f1, FILE* f2)
             fprintf(f2,"%s", (j == i - 1) ? "" : ", ");
         }
 
-        printf(" }%s\n", (i == g_numGenes - 1) ? "" : ",");
+        cout << " }" << ((i == g_numGenes - 1) ? "" : ",") << endl;
         fprintf(f2," %s\n", (i == g_numGenes - 1) ? "" : ",");
     }
 
@@ -99,8 +99,7 @@ void ShowHelp(){
 			"RAW_LWI|RAW_GCC" << endl;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
 	//
 	// <Mun> First check if necessary arguments are supplied
 	//
@@ -130,10 +129,8 @@ int main(int argc, char *argv[])
     // Change the following 2 variables to run with different
     // absent word type (RAW) and diff indices.
     //
-    int absWordType = MAW;		// Default: RAW
-    int diffIndex = MAW_TVD;	// Default: RAW_LWI
-    // char url[300];				// <Mun> To store enough data
-
+    int absWordType = MAW;      // Default: RAW
+    int diffIndex = MAW_TVD;    // Default: RAW_LWI
 	
 	if(word_type == "RAW") absWordType = RAW;	// <Mun> No need for else, since MAW is already set
 
@@ -150,21 +147,13 @@ int main(int argc, char *argv[])
 		// else diffIndex = MAW_TVD; // No need, already set
 	}
 	
-    //
-    // Change the following variable to change the data folder location
-    //
-    char *strDataDir;
-	
-    strDataDir = (char *) malloc( input_dir.length() + 1 );
-    strcpy(strDataDir, input_dir.c_str());
-    cout << "Data Dir   : " << strDataDir << endl;
+    cout << "Data Dir   : " << input_dir << endl;
 
     //
     // Change the following variables for running a different set of species/gene sequences
     //
 
-    int nGenes = 0;
-
+    
     //
     // Short name code used for each species.
     char* strSpeciesShortName[MAX_SPECIES_NAME_LEN];
@@ -173,46 +162,41 @@ int main(int argc, char *argv[])
     // Full name of each species.
     char* strSpeciesFullName[MAX_SPECIES_NAME_LEN];
 
-    char line[MAX_SPECIES_NAME_LEN + 3];
     cout << "SpeciesFull: " << input_dir << "SpeciesFull.txt\n";
 
-    FILE *f2 = fopen((input_dir + "SpeciesFull.txt").c_str(), "r");
-	if(!f2){
-		cout << "The source directory doesn't contain \"SpeciesFull.txt\"!" << endl;
-		return FAILURE;
-	}
-
-    while( fgets(line, sizeof line, f2) != NULL ){
-        line[strlen(line)-1] = '\0';
-        strcpy(g_strSpeciesFullName[nGenes], line);
-        nGenes++;
+    int nGenes = 0;
+    ifstream speciesFull(input_dir + "SpeciesFull.txt");
+    if(!speciesFull.is_open()){
+        cout << "The source directory doesn't contain \"SpeciesFull.txt\"!" << endl;
+        return FAILURE;
+    }
+    for (string line; getline(speciesFull, line); ++nGenes){
+        if(_gLargestSpeciesLength < line.length()) _gLargestSpeciesLength = line.length();
+        strcpy(g_strSpeciesFullName[nGenes], line.c_str());
     }
     g_numGenes = nGenes;
 	
     double diffMatrix[NUM_GENE][NUM_GENE] = {0};
     int rank[NUM_GENE][NUM_GENE] = {0};
 
-    printf("%sDistanceMatrix.txt\n", output_dir.c_str());
+    cout << "Output file: " << output_dir << "DistanceMatrix.txt" << endl;
 
-
-    FILE *f3 = fopen((input_dir + "DistanceMatrix.txt").c_str(), "w+");
+    FILE *f3 = fopen((output_dir + "DistanceMatrix.txt").c_str(), "w+");
 
     FILE *f4 = fopen((output_dir + "Output.txt").c_str(), "w+");
-    strcpy(g_strDataDir, strDataDir);
+    strcpy(g_strDataDir, input_dir.c_str());
 
-    FILE *SR_text = fopen((output_dir + "SpeciesRelation.txt").c_str(), "w+");
-    FILE *SR_json = fopen((output_dir + "SpeciesRelation.json").c_str(), "w+");
-
-
-    Initialize(strSpeciesFullName, strSpeciesShortName, nGenes, strDataDir);
+    Initialize(strSpeciesFullName, strSpeciesShortName, nGenes, g_strDataDir);
 
     getDiffMatrix(diffMatrix, absWordType, diffIndex);
     PrintDiffMatrix(diffMatrix, f3, f4);
 
-
-
     getRanks(rank, absWordType, diffIndex);
-    PrintSpeciesRelations(rank, SR_text, SR_json);
+    PrintSpeciesRelations(
+                      rank,
+                      new ofstream(output_dir + "SpeciesRelation.txt"),
+                      new ofstream(output_dir + "SpeciesRelation.json")
+                  );
 
     return 0;
 }
