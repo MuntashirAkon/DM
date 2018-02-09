@@ -7,11 +7,10 @@
 #pragma once
 
 #include <vector>
-
+#include <string>
 using namespace std;
 
-class Set
-{
+class Set{
     vector<string> rgElements;
     bool m_fBulkAddElements;
 
@@ -21,7 +20,7 @@ public:
     Set operator=(const Set& B);
     Set(const Set& B);
 
-    static Set CreateFromFile(char *pstrFileName);
+    static Set CreateFromFile(string filename);
 
     void StartBulkAddElements();
     void EndBulkAddElements();
@@ -29,6 +28,7 @@ public:
     void AddElement(string strElement);
     Set Union(Set &B);
     Set Intersection(Set &B);
+    Set Difference(Set B);
     Set Difference(Set &B);
     Set SymmetricDifference(Set &B);
 
@@ -39,7 +39,7 @@ public:
     double GCContent_2();
     int Cardinality();
 
-    vector<pair<int, double>> LengthDistribution();
+    vector< pair<int, double> > LengthDistribution();
 
     //
     // Compare 2 elements of the set for ordering
@@ -47,10 +47,7 @@ public:
     //
     // Returns true if a is smaller than b
     //
-    static bool cmp (string a, string b)
-    {
-        return a.compare(b) < 0;
-    }
+    static bool cmp(string a, string b){ return a.compare(b) < 0; }
 
 private:
     void CopyInternal(const Set& B);

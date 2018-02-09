@@ -65,27 +65,8 @@ extern int Initialize(
     return 0;
 }
 
-extern  int getDiffMatrix(
-    double diffMatrix[][NUM_GENE],
-    int absWordType,
-    int diffIndex
-    )
-{
-    int ret = 0;
-
-    if (absWordType != MAW && absWordType != RAW)
-        return -1;
-
-    if (absWordType == RAW)
-    {
-        ret = runRaw(diffMatrix, diffIndex);
-    }
-    else if (absWordType == MAW)
-    {
-        ret = runMaw(diffMatrix, diffIndex);
-    }
-
-    return 0;
+extern  int getDiffMatrix(double diffMatrix[][NUM_GENE], int absWordType, int diffIndex){
+    return (absWordType == RAW ? runRaw(diffMatrix, diffIndex) : runMaw(diffMatrix, diffIndex));
 }
 
 extern  int getRanks(int rank[][NUM_GENE], int absWordType, int diffIndex)

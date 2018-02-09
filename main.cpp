@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cassert>
 
-#include "Set_1.cpp"
+#include "Set.h"
 #include "Tests_1.cpp"
 #include "Constants.cpp"
 #include "Globals.cpp"
@@ -17,10 +17,28 @@
 using namespace std;
 
 //
+// Debug mode
+//
+#define DEBUG true
+
+//
 //	<Mun> CLI Return Values
 //
 #define SUCCESS 0
 #define FAILURE 1
+
+//
+// Input files
+//
+#define SPECIES_FULL "SpeciesFull.txt"
+
+
+//
+// Output files
+//
+#define SPECIES_RELATION_TXT  "SpeciesRelation.txt"
+#define SPECIES_RELATION_JSON "SpeciesRelation.json"
+#define DISTANCE_MATRIX       "DistanceMatrix.txt"
 
 int _gLargestSpeciesLength = 0;
 
@@ -68,6 +86,9 @@ void PrintSpeciesRelations(int ranks[][NUM_GENE], ofstream *text, ofstream *json
     json->close();
 }
 
+//
+// Java array format, so that it can be tested directly using Match7
+//
 void PrintDiffMatrix(double diffMatrix[][NUM_GENE], FILE* f1, FILE* f2){
     int i, j;
 
@@ -108,32 +129,22 @@ int main(int argc, char *argv[]){
 		ShowHelp();
 		return FAILURE; 	// Not enough arguments to work with, so exit FAILURE
 	}
-	
+
 	//
 	// <Mun> Change the argv to readable values
 	//
-	string word_type 	= argv[1];
-	string diff_index 	= argv[2];
-	string input_dir	= argv[3];
-	string output_dir	= (argc > 5) ? argv[4] : input_dir; // Set input dir as output dir if 4th argument isn't set
-	
-	//
-	// <Mun> Add trailing slash to the directories
-	//
-        //if(input_dir.back() != '/')
-	input_dir   += "/";
-	//if(output_dir.back() != '/')
-	output_dir += "/";
-		
+	string word_type  = argv[1];  // Absent word type
+	string diff_index = argv[2];  // Diff Index
+	string input_dir  = argv[3];
+	string output_dir = (argc > 5) ? argv[4] : input_dir; // Set input dir as output dir if 4th argument isn't set
+
     //
     // Change the following 2 variables to run with different
     // absent word type (RAW) and diff indices.
     //
-    int absWordType = MAW;      // Default: RAW
-    int diffIndex = MAW_TVD;    // Default: RAW_LWI
+    int absWordType = (word_type == "RAW") ? RAW : MAW;
+    int diffIndex = MAW_TVD;    // Default for RAW: RAW_GCC
 	
-	if(word_type == "RAW") absWordType = RAW;	// <Mun> No need for else, since MAW is already set
-
 	// <Mun>
 	if(absWordType == RAW){
 		if(diff_index == "RAW_LWI") diffIndex = RAW_LWI;
@@ -147,10 +158,11 @@ int main(int argc, char *argv[]){
 		// else diffIndex = MAW_TVD; // No need, already set
 	}
 	
-    cout << "Data Dir   : " << input_dir << endl;
+    if(DEBUG) cout << "Data Dir   : " << input_dir << endl;
 
     //
     // Change the following variables for running a different set of species/gene sequences
+    // FIXME: Transform the bellow into pure C++ code
     //
 
     
@@ -162,14 +174,15 @@ int main(int argc, char *argv[]){
     // Full name of each species.
     char* strSpeciesFullName[MAX_SPECIES_NAME_LEN];
 
-    cout << "SpeciesFull: " << input_dir << "SpeciesFull.txt\n";
+    if(DEBUG) cout << "SpeciesFull: " << input_dir << '/' << SPECIES_FULL << endl;
 
     int nGenes = 0;
-    ifstream speciesFull(input_dir + "SpeciesFull.txt");
+    ifstream speciesFull(input_dir + '/' + SPECIES_FULL);
     if(!speciesFull.is_open()){
-        cout << "The source directory doesn't contain \"SpeciesFull.txt\"!" << endl;
+        cerr << "The source directory doesn't contain \"SpeciesFull.txt\"!" << endl;
         return FAILURE;
     }
+    // Get line has problems with carriage return
     for (string line; getline(speciesFull, line); ++nGenes){
         if(_gLargestSpeciesLength < line.length()) _gLargestSpeciesLength = line.length();
         strcpy(g_strSpeciesFullName[nGenes], line.c_str());
@@ -179,24 +192,21 @@ int main(int argc, char *argv[]){
     double diffMatrix[NUM_GENE][NUM_GENE] = {0};
     int rank[NUM_GENE][NUM_GENE] = {0};
 
-    cout << "Output file: " << output_dir << "DistanceMatrix.txt" << endl;
+    if(DEBUG) cout << "Output file: " << output_dir << '/' << DISTANCE_MATRIX << endl;
 
-    FILE *f3 = fopen((output_dir + "DistanceMatrix.txt").c_str(), "w+");
+    FILE *f3 = fopen((output_dir + '/' + DISTANCE_MATRIX).c_str(), "w+");
 
-    FILE *f4 = fopen((output_dir + "Output.txt").c_str(), "w+");
+    // Formatted for Match7
+    FILE *f4 = fopen((output_dir + '/' + "Output.txt").c_str(), "w+");
     strcpy(g_strDataDir, input_dir.c_str());
 
-    Initialize(strSpeciesFullName, strSpeciesShortName, nGenes, g_strDataDir);
+    //Initialize(strSpeciesFullName, strSpeciesShortName, nGenes, g_strDataDir);
 
     getDiffMatrix(diffMatrix, absWordType, diffIndex);
     PrintDiffMatrix(diffMatrix, f3, f4);
 
     getRanks(rank, absWordType, diffIndex);
-    PrintSpeciesRelations(
-                      rank,
-                      new ofstream(output_dir + "SpeciesRelation.txt"),
-                      new ofstream(output_dir + "SpeciesRelation.json")
-                  );
+    PrintSpeciesRelations(rank, new ofstream(output_dir + '/' + SPECIES_RELATION_TXT), new ofstream(output_dir + '/' + SPECIES_RELATION_JSON));
 
-    return 0;
+    return SUCCESS;
 }

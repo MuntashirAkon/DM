@@ -4,58 +4,46 @@
 // in difference matrix calculations.
 //
 
+#include <iostream>
+#include <fstream>
 #include <cstdio>
 #include <iterator>
 #include <cassert>
 #include <algorithm>
 #include <cctype>
 #include <map>
-#include "Set_1.cpp"
-#include "Constants.cpp"
+#include "Set.h"
 
 using namespace std;
 
-Set Set::CreateFromFile(char *pstrFileName)
-{
+Set Set::CreateFromFile(string filename){
+    // Create new Set
     Set set;
-    char buf[MAX_WORD_LEN];
-    //printf("\n%s\n",pstrFileName);
-    if (NULL == freopen(pstrFileName, "r", stdin))
-    {
-        printf("%s file not found!!!\n", pstrFileName);
-        assert(false && "FILE NOT FOUND");
+    cout << filename << endl;
+    ifstream species(filename);
+    if (!species.is_open()){
+        cerr << "The file " << filename << " is not found!" << endl;
+        assert(false);
     }
-
+    // Add elements
     set.StartBulkAddElements();
-    while (EOF != scanf("%s", buf))
-    {
-        set.AddElement(buf);
-    }
+    for(string line; getline(species, line); ) set.AddElement(line);
     set.EndBulkAddElements();
 
-    fclose(stdin);
-
+    species.close();
     return set;
 }
 
-Set::Set()
-{
-    m_fBulkAddElements = false;
-}
+Set::Set(){ m_fBulkAddElements = false; }
 
-Set::Set(const Set& B)
-{
-    CopyInternal(B);
-}
+Set::Set(const Set& B) { CopyInternal(B); }
 
-Set Set::operator=(const Set& B)
-{
+Set Set::operator=(const Set& B){
     CopyInternal(B);
     return *this;
 }
 
-Set::~Set()
-{
+Set::~Set(){
     rgElements.clear();
 
     //
@@ -64,8 +52,7 @@ Set::~Set()
     //rgElements.shrink_to_fit();
 }
 
-void Set::CopyInternal(const Set& B)
-{
+void Set::CopyInternal(const Set& B){
     m_fBulkAddElements = false;
     rgElements.assign(
         B.rgElements.begin(),
@@ -74,13 +61,11 @@ void Set::CopyInternal(const Set& B)
 }
 
 
-void Set::StartBulkAddElements()
-{
+void Set::StartBulkAddElements(){
     m_fBulkAddElements = true;
 }
 
-void Set::EndBulkAddElements()
-{
+void Set::EndBulkAddElements(){
     m_fBulkAddElements = false;
 
     //
@@ -91,31 +76,22 @@ void Set::EndBulkAddElements()
     sort(rgElements.begin(), rgElements.end(), cmp);
 }
 
-void Set::AddElement(string strElement)
-{
+void Set::AddElement(string strElement){
     int i, j;
 
-    if (m_fBulkAddElements)
-    {
+    if (m_fBulkAddElements){
         rgElements.push_back(strElement);
-    }
-    else
-    {
+    }else{
         //
         // We ensure that the vector remains sorted after adding an element
         // O(n) operations
         //
-        for (i = 0; i < (int)rgElements.size() && cmp(rgElements[i], strElement); i++)
-        {
-        }
+        for (i = 0; i < (int)rgElements.size() && cmp(rgElements[i], strElement); i++);
 
-        if (i == rgElements.size())
-        {
+        if (i == rgElements.size()){
             // We simply add the new element at the end
             rgElements.push_back(strElement);
-        }
-        else
-        {
+        }else{
             // We make room for the new element at the right spot
             // by displacing the larger items 1 position to the right
 
@@ -128,8 +104,7 @@ void Set::AddElement(string strElement)
             //
             // Shift the elements to the right, one spot
             //
-            for (j = rgElements.size() - 1 ; j > i ; j--)
-            {
+            for (j = rgElements.size() - 1 ; j > i ; j--){
                 rgElements[j] = rgElements[j - 1];
             }
 
@@ -140,8 +115,7 @@ void Set::AddElement(string strElement)
     }
 }
 
-Set Set::Union(Set &B)
-{
+Set Set::Union(Set &B){
     assert(!m_fBulkAddElements);
 
     Set C;
@@ -149,8 +123,7 @@ Set Set::Union(Set &B)
 
     C.rgElements.assign(rgElements.begin(), rgElements.end());
 
-    for (i = 0; i < (int)B.rgElements.size(); i++)
-    {
+    for (i = 0; i < (int)B.rgElements.size(); i++){
         C.rgElements.push_back(B.rgElements[i]);
     }
 
@@ -159,11 +132,9 @@ Set Set::Union(Set &B)
     //
     // Duplicate Removal
     //
-    for (i = 0, j = 0; i < (int)C.rgElements.size(); j++)
-    {
+    for (i = 0, j = 0; i < (int)C.rgElements.size(); j++){
         string str = C.rgElements[i++];
-        while (i < (int)C.rgElements.size() && 0 == str.compare(C.rgElements[i]))
-        {
+        while (i < (int)C.rgElements.size() && 0 == str.compare(C.rgElements[i])){
             i++;
         }
 
@@ -176,8 +147,7 @@ Set Set::Union(Set &B)
     // so that the vector size remains correct
     //
     i = C.rgElements.size();
-    while (j < i)
-    {
+    while (j < i){
         C.rgElements.pop_back();
         j++;
     }
@@ -185,8 +155,7 @@ Set Set::Union(Set &B)
     return C;
 }
 
-Set Set::Intersection(Set &B)
-{
+Set Set::Intersection(Set &B){
     assert(!m_fBulkAddElements);
 
     Set C;
@@ -204,69 +173,60 @@ Set Set::Intersection(Set &B)
     return C;
 }
 
-Set Set::Difference(Set &B)
-{
+Set Set::Difference(Set &B){
     assert(!m_fBulkAddElements);
 
     Set C;
     int i;
 
-    for (i = 0; i < (int)rgElements.size(); i++)
-    {
+    for (i = 0; i < (int)rgElements.size(); i++){
         string str = rgElements[i];
-        if (!binary_search(B.rgElements.begin(), B.rgElements.end(), str, cmp))
-        {
+        if (!binary_search(B.rgElements.begin(), B.rgElements.end(), str, cmp)){
             C.rgElements.push_back(str);
         }
     }
 
     return C;
 }
-Set Set::Difference(Set B)
-{
+
+Set Set::Difference(Set B){
     assert(!m_fBulkAddElements);
 
     Set C;
     int i;
 
-    for (i = 0; i < (int)rgElements.size(); i++)
-    {
+    for (i = 0; i < (int)rgElements.size(); i++){
         string str = rgElements[i];
-        if (!binary_search(B.rgElements.begin(), B.rgElements.end(), str, cmp))
-        {
+        if (!binary_search(B.rgElements.begin(), B.rgElements.end(), str, cmp)){
             C.rgElements.push_back(str);
         }
     }
 
     return C;
 }
-Set Set::SymmetricDifference(Set &B)
-{
+
+Set Set::SymmetricDifference(Set &B){
     assert(!m_fBulkAddElements);
 
     return Union(B).Difference(Intersection(B));
 }
 
-void Set::Print()
-{
+void Set::Print(){
     assert(!m_fBulkAddElements);
 
     int i;
 
-    for (i = 0; i < (int)rgElements.size(); i++)
-    {
+    for (i = 0; i < (int)rgElements.size(); i++){
         printf("%s\n", rgElements[i].c_str());
     }
     printf("\n");
 }
 
-double Set::LengthWeightedIndex()
-{
+double Set::LengthWeightedIndex(){
     double res = 0.0;
     int i;
 
-    for (i = 0; i < (int)rgElements.size(); i++)
-    {
+    for (i = 0; i < (int)rgElements.size(); i++){
         int len = rgElements[i].length();
 
         res += 1.0 / (len * len);
@@ -279,22 +239,18 @@ double Set::LengthWeightedIndex()
 // Computes the ratio of 'G' and 'C' (combined), compared to
 // the total number of base pairs in the entire set
 //
-double Set::GCContent()
-{
+double Set::GCContent(){
     int i, j;
     double res = 0.0;
     double numerator = 0.0;
     double denominator = 0.0;
 
-    for (i = 0; i < (int)rgElements.size(); i++)
-    {
+    for (i = 0; i < (int)rgElements.size(); i++){
         denominator += rgElements[i].length();
 
-        for (j = 0; j < (int)rgElements[i].length(); j++)
-        {
+        for (j = 0; j < (int)rgElements[i].length(); j++){
             char ch = rgElements[i][j];
-            if ('G' == ch || 'C' == ch)
-            {
+            if ('G' == ch || 'C' == ch){
                 numerator++;
             }
         }
@@ -311,8 +267,7 @@ double Set::GCContent()
     return res;
 }
 
-int Set::Cardinality()
-{
+int Set::Cardinality(){
     return (int)rgElements.size();
 }
 
@@ -321,28 +276,22 @@ int Set::Cardinality()
 // Each element in the vector specifies a length, followed by
 // how many words were there of that length.
 //
-vector<pair<int, double> > Set::LengthDistribution()
-{
+vector<pair<int, double> > Set::LengthDistribution(){
     map<int, int> mapDist;
     vector<pair<int, double> > rgDist;
     int i, len;
 
     i = 0;
-    while (i < (int)rgElements.size())
-    {
+    while (i < (int)rgElements.size()){
         len = rgElements[i++].length();
-        if (mapDist.find(len) == mapDist.end())
-        {
+        if (mapDist.find(len) == mapDist.end()){
             mapDist[len] = 1;
-        }
-        else
-        {
+        }else{
             mapDist[len]++;
         }
     }
 
-    for ( map<int, int>::iterator it = mapDist.begin(); it != mapDist.end(); it++)
-    {
+    for ( map<int, int>::iterator it = mapDist.begin(); it != mapDist.end(); it++){
         rgDist.push_back(
             pair<int, double>(it->first, 1.0 * it->second / rgElements.size())
             );
@@ -355,8 +304,7 @@ vector<pair<int, double> > Set::LengthDistribution()
     //
 #if 1
     double p = 0.0;
-    for (i = 0; i < (int)rgDist.size(); i++)
-    {
+    for (i = 0; i < (int)rgDist.size(); i++){
         p += rgDist[i].second;
     }
 

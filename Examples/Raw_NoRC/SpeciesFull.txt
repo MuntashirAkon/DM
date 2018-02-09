@@ -1,0 +1,11 @@
+human
+goat
+opossum
+gallus
+lemur
+mouse
+rabbit
+rat
+gorilla
+bovine
+chimp

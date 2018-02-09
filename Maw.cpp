@@ -6,10 +6,11 @@
 // the code used to generate phylogenetic tree needs the lower triangle
 //
 
+#include <string>
 #include <cassert>
 #include <cstdlib>
 #include <cstdio>
-#include "Set_1.cpp"
+#include "Set.h"
 #include "Constants.cpp"
 #include "Globals.cpp"
 
@@ -18,15 +19,11 @@ double calculateTVD(
     vector<pair<int, double> > rgB
     );
 
-int runMaw(double diffMatrix[][NUM_GENE], int diffIndex)
-{
+int runMaw(double diffMatrix[][NUM_GENE], int diffIndex){
     int i, j;
     Set maw[NUM_GENE];
     Set diff, a, b;
-    char strFileName[MAX_PATH];
-
-    if (diffIndex < MAW_LWI_SDIFF || diffIndex > MAW_TVD)
-        return -1;
+    string filename;
 
     //
     // 1. Read Input
@@ -34,60 +31,54 @@ int runMaw(double diffMatrix[][NUM_GENE], int diffIndex)
     // 3. Calculate index
     // 4. Produce the difference matrix for the 11 genes
     //
-    for (i = 0; i < g_numGenes; i++)
-    {
-        sprintf(strFileName, "%s/%s.maw.txt", g_strDataDir, g_strSpeciesFullName[i]);
-        //printf("\n%s\n",strFileName);
-        maw[i] = Set::CreateFromFile(strFileName);
+    for (i = 0; i < g_numGenes; i++){
+        filename = string(g_strDataDir) + '/' + string(g_strSpeciesFullName[i]) + ".maw.txt";
+        maw[i] = Set::CreateFromFile(filename);
     }
 
-    for (i = 0; i < g_numGenes; i++)
-    {
-        for (j = 0; j < i; j++)
-        {
-            switch(diffIndex)
-            {
-            case MAW_LWI_SDIFF:
-                diff = maw[i].SymmetricDifference(maw[j]);
-                diffMatrix[i][j] = diffMatrix[j][i] = diff.LengthWeightedIndex();
-                break;
+    for (i = 0; i < g_numGenes; i++){
+        for (j = 0; j < i; j++){
+            switch(diffIndex){
+                case MAW_LWI_SDIFF:
+                    diff = maw[i].SymmetricDifference(maw[j]);
+                    diffMatrix[i][j] = diffMatrix[j][i] = diff.LengthWeightedIndex();
+                    break;
 
-            case MAW_LWI_INTERSECT:
-                diff = maw[i].Intersection(maw[j]);
-                diffMatrix[i][j] = diffMatrix[j][i] = -diff.LengthWeightedIndex();
-                break;
+                case MAW_LWI_INTERSECT:
+                    diff = maw[i].Intersection(maw[j]);
+                    diffMatrix[i][j] = diffMatrix[j][i] = -diff.LengthWeightedIndex();
+                    break;
 
-            case MAW_GCC_SDIFF:
-                diff = maw[i].SymmetricDifference(maw[j]);
-                diffMatrix[i][j] = diffMatrix[j][i] = diff.GCContent();
-                break;
+                case MAW_GCC_SDIFF:
+                    diff = maw[i].SymmetricDifference(maw[j]);
+                    diffMatrix[i][j] = diffMatrix[j][i] = diff.GCContent();
+                    break;
 
-            case MAW_GCC_INTERSECT:
-                diff = maw[i].Intersection(maw[j]);
-                diffMatrix[i][j] = diffMatrix[j][i] = 1.0 - diff.GCContent();
-                break;
+                case MAW_GCC_INTERSECT:
+                    diff = maw[i].Intersection(maw[j]);
+                    diffMatrix[i][j] = diffMatrix[j][i] = 1.0 - diff.GCContent();
+                    break;
 
-            case MAW_JD:
+                case MAW_JD:
 
-                a = maw[i].Union(maw[j]);
+                    a = maw[i].Union(maw[j]);
 
-                b = maw[i].Intersection(maw[j]);
+                    b = maw[i].Intersection(maw[j]);
 
-                diffMatrix[i][j] = diffMatrix[j][i] = 1.0 - 1.0 * b.Cardinality() / a.Cardinality();
+                    diffMatrix[i][j] = diffMatrix[j][i] = 1.0 - 1.0 * b.Cardinality() / a.Cardinality();
 
-                break;
+                    break;
 
-            case MAW_TVD:
-                diffMatrix[i][j] = diffMatrix[j][i]
-                                 = calculateTVD(
-                                        maw[i].LengthDistribution(),
-                                        maw[j].LengthDistribution()
-                                        );
-                break;
+                case MAW_TVD:
+                    diffMatrix[i][j] = diffMatrix[j][i]
+                                    = calculateTVD(
+                                            maw[i].LengthDistribution(),
+                                            maw[j].LengthDistribution()
+                                            );
+                    break;
             }
 
         }
-        //printf("\nYes\n");
     }
 
     return 0;

@@ -45,7 +45,7 @@
 #define MAW_GCC_SDIFF       3  // GC content of symmetric difference
 #define MAW_GCC_INTERSECT   4  // GC content of intersection
 #define MAW_JD              5  // Jaccard Distance
-#define MAW_TVD             6  // Jaccard Distance
+#define MAW_TVD             6  // Total variation distance
 
 //
 // Defined constants for different RAW based similarity matrices
