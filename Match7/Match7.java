@@ -415,7 +415,12 @@ class TreeCanvas extends Canvas {
 public class Match7 {
 
     public static void main(String[] args) {
-        String FILENAME = args[0] + "SpeciesFull.txt";
+        if(args.length != 1){
+            System.out.println("USAGE: Match7 <Directory>");
+            System.out.println("The <Directory> should contain DistanceMatrix.txt and SpeciesFull.txt");
+            System.exit(1);
+        }
+        String FILENAME = args[0] + "/SpeciesFull.txt";
 	//System.out.println(args[0]);
         BufferedReader br = null;
         FileReader fr = null;
@@ -477,7 +482,7 @@ public class Match7 {
             System.out.println(speciesList[cnt]);
         }
                 try {
-                        FILENAME = args[0] + "DistanceMatrix.txt";
+                        FILENAME = args[0] + "/DistanceMatrix.txt";
                         fr = new FileReader(FILENAME);
                         br = new BufferedReader(fr);
                         br = new BufferedReader(new FileReader(FILENAME));
@@ -510,7 +515,7 @@ public class Match7 {
 
         NJ njclu = new NJ(speciesList, diffMatrix);
         new TreeFrame("Neighbour tree", njclu.getRoot(), args[0]);
-        System.exit(0);
+        //System.exit(0);
     }
 }
 

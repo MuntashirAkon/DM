@@ -1,9 +1,5 @@
 //
 // This file contains some utility code.
-// 
-// The getRanks method ranks the different species relative to one species
-// based on the difference matrix. It does this analysis for each species and
-// generates a 2D rank table.
 //
 // In addition, this file contains a method PrintDiffMatrix_LatexFormat
 // that was used to suitably format the difference matrix into latex style
@@ -13,8 +9,6 @@
 #include <cstdio>
 #include <algorithm>
 #include <numeric>
-#include "Constants.h"
-#include "Globals.h"
 
 using namespace std;
 
@@ -34,17 +28,6 @@ public:
         return m_pVal[lindex] < m_pVal[rindex];
     }
 };
-
-void getRanks(double diffMatrix[][NUM_GENE], int rank[][NUM_GENE])
-{
-    int i;
-
-    for (i = 0; i < g_numGenes; i++)
-    {
-        iota(rank[i], rank[i] + g_numGenes, 0);
-        sort(rank[i], rank[i] + g_numGenes, IndexComparer(diffMatrix[i]));
-    }
-}
 
 //void PrintDiffMatrix_LatexFormat(double diffMatrix[NUM_GENE][NUM_GENE])
 //{

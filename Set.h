@@ -4,10 +4,19 @@
 // used in difference matrix calculations.
 //
 
-#pragma once
+#ifndef DM_SET_H
+#define DM_SET_H
 
 #include <vector>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <cstdio>
+#include <iterator>
+#include <cassert>
+#include <algorithm>
+#include <cctype>
+#include <map>
 using namespace std;
 
 class Set{
@@ -17,7 +26,7 @@ class Set{
 public:
     Set();
     ~Set();
-    Set operator=(const Set& B);
+    Set& operator=(const Set& B);
     Set(const Set& B);
 
     static Set CreateFromFile(string filename);
@@ -36,7 +45,6 @@ public:
 
     double LengthWeightedIndex();
     double GCContent();
-    double GCContent_2();
     int Cardinality();
 
     vector< pair<int, double> > LengthDistribution();
@@ -47,8 +55,10 @@ public:
     //
     // Returns true if a is smaller than b
     //
-    static bool cmp(string a, string b){ return a.compare(b) < 0; }
+    static bool cmp(const string& a, const string& b){ return a.compare(b) < 0; }
 
 private:
     void CopyInternal(const Set& B);
 };
+
+#endif // DM_SET_H

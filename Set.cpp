@@ -4,14 +4,6 @@
 // in difference matrix calculations.
 //
 
-#include <iostream>
-#include <fstream>
-#include <cstdio>
-#include <iterator>
-#include <cassert>
-#include <algorithm>
-#include <cctype>
-#include <map>
 #include "Set.h"
 
 using namespace std;
@@ -23,22 +15,21 @@ Set Set::CreateFromFile(string filename){
     ifstream species(filename);
     if (!species.is_open()){
         cerr << "The file " << filename << " is not found!" << endl;
-        assert(false);
+        throw exception();
     }
     // Add elements
     set.StartBulkAddElements();
     for(string line; getline(species, line); ) set.AddElement(line);
     set.EndBulkAddElements();
-
     species.close();
     return set;
 }
 
 Set::Set(){ m_fBulkAddElements = false; }
 
-Set::Set(const Set& B) { CopyInternal(B); }
+Set::Set(const Set& B) { CopyInternal(B); } // NOLINT
 
-Set Set::operator=(const Set& B){
+Set& Set::operator=(const Set& B){
     CopyInternal(B);
     return *this;
 }
@@ -77,7 +68,7 @@ void Set::EndBulkAddElements(){
 }
 
 void Set::AddElement(string strElement){
-    int i, j;
+    unsigned long i, j;
 
     if (m_fBulkAddElements){
         rgElements.push_back(strElement);
@@ -86,7 +77,7 @@ void Set::AddElement(string strElement){
         // We ensure that the vector remains sorted after adding an element
         // O(n) operations
         //
-        for (i = 0; i < (int)rgElements.size() && cmp(rgElements[i], strElement); i++);
+        for (i = 0; i < rgElements.size() && cmp(rgElements[i], strElement); i++);
 
         if (i == rgElements.size()){
             // We simply add the new element at the end
@@ -119,7 +110,7 @@ Set Set::Union(Set &B){
     assert(!m_fBulkAddElements);
 
     Set C;
-    int i, j;
+    unsigned long i, j;
 
     C.rgElements.assign(rgElements.begin(), rgElements.end());
 
@@ -227,7 +218,7 @@ double Set::LengthWeightedIndex(){
     int i;
 
     for (i = 0; i < (int)rgElements.size(); i++){
-        int len = rgElements[i].length();
+        unsigned long len = rgElements[i].length();
 
         res += 1.0 / (len * len);
     }
@@ -280,10 +271,9 @@ vector<pair<int, double> > Set::LengthDistribution(){
     map<int, int> mapDist;
     vector<pair<int, double> > rgDist;
     int i, len;
-
     i = 0;
-    while (i < (int)rgElements.size()){
-        len = rgElements[i++].length();
+    while (i < rgElements.size()){
+        len = static_cast<int>(rgElements[i++].length());
         if (mapDist.find(len) == mapDist.end()){
             mapDist[len] = 1;
         }else{
@@ -291,10 +281,9 @@ vector<pair<int, double> > Set::LengthDistribution(){
         }
     }
 
-    for ( map<int, int>::iterator it = mapDist.begin(); it != mapDist.end(); it++){
-        rgDist.push_back(
-            pair<int, double>(it->first, 1.0 * it->second / rgElements.size())
-            );
+    map<int, int>::iterator it;
+    for (it = mapDist.begin(); it != mapDist.end(); it++){
+        rgDist.push_back(pair<int, double>(it->first, 1.0 * it->second / rgElements.size()));
     }
     sort(rgDist.begin(), rgDist.end());
 
@@ -307,9 +296,6 @@ vector<pair<int, double> > Set::LengthDistribution(){
     for (i = 0; i < (int)rgDist.size(); i++){
         p += rgDist[i].second;
     }
-
-    //assert(abs(1.0 - p) <= 1e-10);
-
 #endif
 
     return rgDist;
