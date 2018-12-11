@@ -31,6 +31,7 @@ If all the conditions are fulfilled, output files will be generated in the *Targ
 
 ### Dissimilarity Indexes
 For Minimal Absent Words:
+
 | Argument Name     | Abbreviation
 | ----------------- | ------------
 | MAW_LWI_SDIFF     | Length weighted index of symmetric difference 
@@ -41,6 +42,7 @@ For Minimal Absent Words:
 | MAW_TVD           | Total variation distance
 
 For Relative Absent Words:
+
 | Argument Name | Abbreviation
 | ------------- | ------------
 | RAW_LWI       | Length weighted index
@@ -59,7 +61,7 @@ The folders should be named after the referenced species name (let's suppose `hu
 which are to be named after the referenced species name and the species names it was compared to, joined by an underscore
 and the extension should be `.raw.txt`, e.g. `human_goat.raw.txt`.
 
-> See the `Examples` folder for details. (RC = Reverse Complement)
+> See the [Examples](./Examples) folder for details. (RC = Reverse Complement)
 
 ### Outputs
 - `SpeciesRelation.txt` : Contains sorted species relations (Readable)
