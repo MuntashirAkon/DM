@@ -3,13 +3,9 @@ A tool to generate distance matrix and sorted species relations from the given m
 
 ## Installation
 Download/clone the repository and set root directory as the current directory.
-### Using cmake
+
 ```bash
-cmake ./ && make
-```
-### Manual Installation
-```bash
-g++ -o dm main.cpp Set.cpp Process.cpp
+g++ -o dm main.cpp Set.cpp Process.cpp -static-libstdc++ -O3 -DNDEBUG
 ```
 
 ## Usage
