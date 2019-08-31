@@ -77,7 +77,7 @@ void Process::printDiffMatrix(){
             printf("%s", (j == i - 1) ? "" : ", ");
             fprintf(f2,"%s", (j == i - 1) ? "" : ", ");
         }
-        cout << " }" << ((i == this->total_genes - 1) ? "" : ",") << endl;
+        cout << " }" << ((i == this->total_genes - 1) ? "" : ",") << '\n';
         fprintf(f2," %s\n", (i == this->total_genes - 1) ? "" : ",");
     }
 }
@@ -90,17 +90,17 @@ void Process::printSortedSpeciesRelations(){
 
     if(!text.is_open() && !json.is_open()) return;
 
-    json << "{" << endl;
+    json << "{" << '\n';
     for (i = 0; i < this->total_genes; i++){
         text << setw(this->largest_species_len) << this->species[i] << ":";
-        json << "    \"" << this->species[i] << "\": [" << endl;
+        json << "    \"" << this->species[i] << "\": [" << '\n';
         for (j = 0; j < this->total_genes; j++){
             text << " -> " << setw(this->largest_species_len) << this->species[rank[i][j]] << ((j != this->total_genes - 1) ? " ": "\n");
-            json << "        \"" << this->species[rank[i][j]] << "\"" << ((j != this->total_genes - 1) ?  ",": "") << endl;
+            json << "        \"" << this->species[rank[i][j]] << "\"" << ((j != this->total_genes - 1) ?  ",": "") << '\n';
         }
-        json << "    ]" << ((i != this->total_genes - 1) ? ", " : "") << endl;
+        json << "    ]" << ((i != this->total_genes - 1) ? ", " : "") << '\n';
     }
-    json << "}" << endl;
+    json << "}" << '\n';
     text.close();
     json.close();
 }

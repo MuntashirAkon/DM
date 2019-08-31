@@ -26,10 +26,10 @@ int main()
             cout << "Index : " << index << endl;
             for ( m = 0 ; m < 5 ; m++ )
                 cout << a[m] << " ";
-                cout << endl;
+                cout << '\n';
             for ( n = 0 ; n < 5 ; n++ )
                 cout << b[n] << " ";
-            cout << endl;
+            cout << '\n';
         }
 
 

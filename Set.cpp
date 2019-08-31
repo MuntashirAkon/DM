@@ -11,7 +11,7 @@ using namespace std;
 Set Set::CreateFromFile(string filename){
     // Create new Set
     Set set;
-    cout << filename << endl;
+    cout << filename << '\n';
     ifstream species(filename);
     if (!species.is_open()){
         cerr << "The file " << filename << " is not found!" << endl;

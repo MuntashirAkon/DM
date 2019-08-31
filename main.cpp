@@ -17,12 +17,12 @@ void ShowHelp(){
 }
 
 int main(int argc, char *argv[]){
-    cout << "DM version " << DM_VERSION << endl;
+    cout << "DM version " << DM_VERSION << '\n';
 	//
 	// First check whether necessary arguments are supplied
 	//
 	if(argc < 4){
-		cout << "Insufficient argument(s) supplied!" << endl;
+		cout << "Insufficient argument(s) supplied!" << '\n';
 		ShowHelp();
 		return EXIT_FAILURE; 	// Not enough arguments to work with, so exit FAILURE
 	}
@@ -54,8 +54,8 @@ int main(int argc, char *argv[]){
 		// else diffIndex = MAW_TVD; // No need, already set
 	}
 
-    cout << "Input Dir  : " << input_dir << endl;
-    cout << "Output Dir : " << output_dir << endl;
+    cout << "Input Dir  : " << input_dir << '\n';
+    cout << "Output Dir : " << output_dir << '\n';
 
     try {
         Process p(absWordType, diffIndex, input_dir, output_dir);
