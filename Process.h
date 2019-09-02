@@ -27,6 +27,7 @@ using namespace std;
 #define SPECIES_RELATION_TXT    "SpeciesRelation.txt"
 #define SPECIES_RELATION_JSON   "SpeciesRelation.json"
 #define DISTANCE_MATRIX         "DistanceMatrix.txt"
+#define DISTANCE_MATRIX_PHYLIP  "DistanceMatrix.dist"
 
 class Process{
     int total_genes;

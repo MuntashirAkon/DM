@@ -65,20 +65,29 @@ void Process::getRanks(){
 void Process::printDiffMatrix(){
     int i, j;
     FILE *f1 = fopen((this->output_dir + '/' + DISTANCE_MATRIX).c_str(), "w+");
-    // Formatted for Match7
-    FILE *f2 = fopen((this->output_dir + '/' + "Output.txt").c_str(), "w+");
+    FILE *f2 = fopen((this->output_dir + '/' + DISTANCE_MATRIX_PHYLIP).c_str(), "w+");
+    fprintf(f2, "%d\n", this->total_genes);
 
     for (i = 0; i < this->total_genes; i++) {
+#ifdef DEBUG
         cout << "{ ";
+#endif
+        fprintf(f2, "%s  ", this->species[i].c_str());
         for (j = 0; j < i; j++) {
+#ifdef DEBUG
             printf("%5.2lf", diffMatrix[i][j]);
-            fprintf(f2,"%5.2lf", diffMatrix[i][j]);
+#endif
+            fprintf(f2,"%5.4lf", diffMatrix[i][j]);
             fprintf(f1, "%5.4lf\n", diffMatrix[i][j]);
+#ifdef DEBUG
             printf("%s", (j == i - 1) ? "" : ", ");
-            fprintf(f2,"%s", (j == i - 1) ? "" : ", ");
+#endif
+            fprintf(f2,"%s", (j == i - 1) ? "" : "  ");
         }
+#ifdef DEBUG
         cout << " }" << ((i == this->total_genes - 1) ? "" : ",") << '\n';
-        fprintf(f2," %s\n", (i == this->total_genes - 1) ? "" : ",");
+#endif
+        fprintf(f2,"\n");
     }
 }
 
